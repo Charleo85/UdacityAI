@@ -11,7 +11,7 @@ boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-diagonal_units = [[rows[i]+cols[i] for i in range(9)], [rows[i]+cols[8-i] for i in range(9)]]
+diagonal_units =  [[r+c for r,c in zip(rows,cols)], [r+c for r,c in zip(rows,cols[::-1])]]
 unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
@@ -36,15 +36,16 @@ def naked_twins(values):
     """
     for unit in unitlist:
         two_values = [box for box in unit if len(values[box]) == 2]
-        undetermineds = [box for box in unit if len(values[box]) > 1]
         s = set()
         twins = []
-        for two in two_values:
+        for two in two_values:   # finding twin
             if values[two] in s:
                 twins.append(values[two])
             else: s.add(values[two])
-        #print(twins)
-        for twin in twins:
+
+        undetermineds = [box for box in unit if len(values[box]) > 1] 
+
+        for twin in twins: #elminate values of twin in other undetermined box in the unit
             for undetermined in undetermineds:
                 if twin[0] in values[undetermined] and twin[1] in values[undetermined]:
                     if len(values[undetermined]) == 2: continue
